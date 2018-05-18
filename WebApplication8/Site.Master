@@ -1,0 +1,90 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="WebApplication8.SiteMaster" %>
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%: Page.Title %> - My ASP.NET Application</title>
+
+    <asp:PlaceHolder runat="server">
+
+    </asp:PlaceHolder>
+
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+     <script type="text/javascript">
+function getData() {
+//REST POST URL
+var requestURL = "http://localhost:51828/api/values";
+var int = setInterval(function () {
+$.ajax({
+type: "GET",
+contentType: "application/json; charset=utf-8",
+url: "http://localhost:51828/api/values",
+dataType: "json",
+success: function (data) {
+    //alert("successs");
+var json = $.parseJSON(data);
+$("#tblUsersInfo tr:not(:last-child)").remove();
+for (var key in json) {
+if (json.hasOwnProperty(key))
+{
+    //alert(json[key].UserDayPhone);
+$("#tblUsersInfo").prepend("<tr><td>" + json[key].UserDayPhone + "</td><td>" + json[key].UserStreet + "</td><td>" + json[key].UserApartment + "</td><td>" + json[key].UserCity + "</td><td>" + json[key].UserProvince + "</td><td>" + json[key].UserPostalCode + "</td><td>" + json[key].UserEmail + "</td>");
+}
+}
+},
+})
+}, 2000);
+}
+
+function AddNewUsersInfo()
+{
+alert("AddNewUsersInfo start");
+var newuser = {
+UserDayPhone: $("#tbUserDayPhone").val(),
+UserStreet: $("#tbUserStreet").val(),
+UserApartment: $("#tbUserApartment").val(),
+UserCity: $("#tbUserCity").val(),
+UserProvince: $("#tbUserProvince").val(),
+UserPostalCode: $("#tbUserPostalCode").val(),
+UserEmail: $("#tbUserEmail").val().toString()
+}
+
+alert(newuser.UserDayPhone.toString());
+// Ajax POST add values
+$.ajax({
+type: "POST",
+contentType: "application/json; charset=utf-8",
+url: "http://localhost:51828/api/values",
+data: JSON.stringify(newuser),
+dataType: "text",
+success: function (data) {
+var result = $.parseJSON(data);
+if (result['status'] == 'success') {
+alert("New user added successfully !");
+}
+else if (result['status'] == 'error') {
+alert("An error occured! Please check your filled out data.");
+}
+},
+})
+}
+        </script>
+</head>
+<body onload="getData()" style="background-color:#DCDCDC">
+    <form runat="server">
+        <asp:ScriptManager runat="server">
+      
+        </asp:ScriptManager>
+
+    
+            <asp:ContentPlaceHolder ID="MainContent" runat="server">
+            </asp:ContentPlaceHolder>
+     
+   
+    </form>
+</body>
+</html>
